@@ -4,57 +4,49 @@
  * [131] Palindrome Partitioning
  */
 
-#include <vector>
-#include <iostream>
-
-using namespace std;
+#include "leetcode.h"
 
 // @lc code=start
 class Solution {
 public:
-    // "aabcdcd"
     vector<vector<string>> partition(string s) {
-        vector<string> curr;
-        vector<vector<string>> res;
-        bt(s, 0, curr, res);
-        return res;
+        vector<vector<string>> ret;
+        vector<string> tmp;
+        bt(s, 0, 0, ret, tmp);
+        return ret;
     }
 
-    void bt(string s, int i, vector<string>& curr, vector<vector<string>>& res) {
-        if (i == s.size()) {
-            res.push_back(curr);
-            return;
-        }
-        for (int j = i; j < s.size(); j++) {
-            if (isPalindrome(s, i, j)) {
-                curr.push_back(s.substr(i, j - i + 1));
-                bt(s, j + 1, curr, res);
-                curr.pop_back();
-            }
-        }
-    }
-
-    bool isPalindrome(string s, int i, int j) {
-        while (i < j) {
-            if (s[i] != s[j]) {
-                return false;
-            }
-            i++;
-            j--;
+private:
+    bool isPalindrome(string& s, int l, int r) {
+        while (l < r) {
+            if (s[l++] != s[r--]) return false;
         }
         return true;
+    }
+
+    void bt(string& s, int i, int j, vector<vector<string>>& ret, vector<string>& tmp) {
+        if (j >= s.size()) {
+            if (i >= s.size()) ret.push_back(tmp);
+            return ;
+        }
+
+        if (isPalindrome(s, i, j)) {
+            tmp.push_back(s.substr(i, j-i+1));
+            bt(s, j+1, j+1, ret, tmp);
+            tmp.pop_back();
+        }
+        
+        // 1、当前非回文；2、当前是回文，回溯后，右指针继续往右移。
+        bt(s, i, j+1, ret, tmp);
     }
 };
 // @lc code=end
 
 int main() {
-    Solution s;    
-    auto res = s.partition("aabcdcd");
-    for (auto& i : res) {
-        for (auto& j : i) {
-            cout << j << "\t";
-        }
+    Solution s;
+    vector<vector<string>> ret = s.partition("aab");
+    for (auto &&i : ret) {
+        for (auto &&j : i) cout << j << " ";
         cout << endl;
     }
-    return 0;
 }
